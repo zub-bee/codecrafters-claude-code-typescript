@@ -22,35 +22,35 @@ async function main() {
 
   // loop begin
 
-  let messages: OpenAI.Chat.ChatCompletionMessageParam[] = [
-    { role: "user", content: prompt },
-  ];
+  while (true) {
+    let messages: OpenAI.Chat.ChatCompletionMessageParam[] = [
+      { role: "user", content: prompt },
+    ];
 
-  let input: OpenAI.Chat.ChatCompletionCreateParamsNonStreaming = {
-    model: "anthropic/claude-haiku-4.5",
-    messages: messages,
-    tools: [
-      {
-        type: "function",
-        function: {
-          name: "Read",
-          description: "Read and return the contents of a file",
-          parameters: {
-            type: "object",
-            properties: {
-              file_path: {
-                type: "string",
-                description: "The path to the file to read",
+    let input: OpenAI.Chat.ChatCompletionCreateParamsNonStreaming = {
+      model: "anthropic/claude-haiku-4.5",
+      messages: messages,
+      tools: [
+        {
+          type: "function",
+          function: {
+            name: "Read",
+            description: "Read and return the contents of a file",
+            parameters: {
+              type: "object",
+              properties: {
+                file_path: {
+                  type: "string",
+                  description: "The path to the file to read",
+                },
               },
+              required: ["file_path"],
             },
-            required: ["file_path"],
           },
         },
-      },
-    ],
-  };
+      ],
+    };
 
-  while (true) {
     let response = await client.chat.completions.create(input);
 
     if (!response.choices || response.choices.length === 0) {
@@ -60,17 +60,15 @@ async function main() {
     // You can use print statements as follows for debugging, they'll be visible when running tests.
     console.error("Logs from your program will appear here!");
 
+    messages.push(response.choices[0].message);
+    const toolCalls = response.choices[0].message.tool_calls;
+
     // if response has no tools
-    if (
-      !response.choices[0].message.tool_calls ||
-      response.choices[0].message?.tool_calls.length === 0
-    ) {
+    if (response.choices[0].message.content || !toolCalls) {
       console.log(response.choices[0].message.content);
       return;
     } else {
       // get tools call from response
-      messages.push(response.choices[0].message);
-      const toolCalls = response.choices[0].message.tool_calls;
       for (const toolCall of toolCalls) {
         const functionName =
           toolCall.type === "function" ? toolCall.function.name : undefined;
@@ -81,7 +79,6 @@ async function main() {
         if (functionName === "Read" && functionArgs) {
           const filePath = JSON.parse(functionArgs).file_path;
           const fileContent = await fs.readFile(filePath, "utf-8");
-          console.log(fileContent);
           const result: OpenAI.ChatCompletionToolMessageParam = {
             role: "tool",
             tool_call_id: toolCall.id,
