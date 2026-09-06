@@ -70,7 +70,7 @@ async function main() {
     } else {
       // get tools call from response
       const toolCalls = response.choices[0].message.tool_calls;
-      // messages.push(response.choices[0].message);
+      messages.push(response.choices[0].message);
       for (const toolCall of toolCalls) {
         const functionName =
           toolCall.type === "function" ? toolCall.function.name : undefined;
