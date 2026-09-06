@@ -60,8 +60,6 @@ async function main() {
     // You can use print statements as follows for debugging, they'll be visible when running tests.
     console.error("Logs from your program will appear here!");
 
-    // TODO: Uncomment the lines below to pass the first stage
-
     // if response has no tools
     if (
       !response.choices[0].message.tool_calls ||
@@ -72,7 +70,7 @@ async function main() {
     } else {
       // get tools call from response
       const toolCalls = response.choices[0].message.tool_calls;
-      messages.push(response.choices[0].message);
+      // messages.push(response.choices[0].message);
       for (const toolCall of toolCalls) {
         const functionName =
           toolCall.type === "function" ? toolCall.function.name : undefined;
