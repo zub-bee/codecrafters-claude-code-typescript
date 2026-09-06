@@ -66,7 +66,7 @@ async function main() {
       response.choices[0].message?.tool_calls.length === 0
     ) {
       console.log(response.choices[0].message.content);
-      return;
+      return response.choices[0].message.content;
     } else {
       // get tools call from response
       const toolCalls = response.choices[0].message.tool_calls;
