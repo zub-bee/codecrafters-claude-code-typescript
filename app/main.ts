@@ -50,13 +50,13 @@ async function main() {
     ],
   };
 
-  let response = await client.chat.completions.create(input);
+  while (true) {
+    let response = await client.chat.completions.create(input);
 
-  if (!response.choices || response.choices.length === 0) {
-    throw new Error("no choices in response");
-  }
+    if (!response.choices || response.choices.length === 0) {
+      throw new Error("no choices in response");
+    }
 
-  while (response.choices[0]) {
     // You can use print statements as follows for debugging, they'll be visible when running tests.
     console.error("Logs from your program will appear here!");
 
@@ -66,11 +66,11 @@ async function main() {
       response.choices[0].message?.tool_calls.length === 0
     ) {
       console.log(response.choices[0].message.content);
-      return response.choices[0].message;
+      return;
     } else {
       // get tools call from response
-      const toolCalls = response.choices[0].message.tool_calls;
       messages.push(response.choices[0].message);
+      const toolCalls = response.choices[0].message.tool_calls;
       for (const toolCall of toolCalls) {
         const functionName =
           toolCall.type === "function" ? toolCall.function.name : undefined;
@@ -89,7 +89,6 @@ async function main() {
           };
           messages.push(result);
         }
-        response = await client.chat.completions.create(input);
       }
     }
   }
