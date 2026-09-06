@@ -64,7 +64,7 @@ async function main() {
     const toolCalls = response.choices[0].message.tool_calls;
 
     // if response has no tools
-    if (response.choices[0].message.content || !toolCalls) {
+    if (!toolCalls) {
       console.log(response.choices[0].message.content);
       return;
     } else {
