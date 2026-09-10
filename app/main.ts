@@ -1,5 +1,6 @@
 import OpenAI from "openai";
-import { Messages } from "openai/resources/chat/completions.js";
+import { exec } from "node:child_process";
+import { stderr, stdout } from "node:process";
 const fs = await import("fs/promises");
 
 async function main() {
@@ -68,6 +69,23 @@ async function main() {
           },
         },
       },
+      {
+        type: "function",
+        function: {
+          name: "Bash",
+          description: "Execute a shell command",
+          parameters: {
+            type: "object",
+            required: ["command"],
+            properties: {
+              command: {
+                type: "string",
+                description: "The command to execute",
+              },
+            },
+          },
+        },
+      },
     ],
   };
 
@@ -122,6 +140,25 @@ async function main() {
             role: "tool",
             tool_call_id: toolCall.id,
             content: "file has been created successfully",
+          };
+          messages.push(result);
+        }
+
+        if (functionName === "Bash" && functionArgs) {
+          const command = JSON.parse(functionArgs).command;
+
+          const commandResult = await new Promise<string>((resolve) => {
+            exec(command, (error, stdout, stderr) => {
+              if (stderr) resolve(stderr);
+              else if (stdout) resolve(stdout);
+              else resolve(error?.message ?? "");
+            });
+          });
+
+          const result: OpenAI.ChatCompletionToolMessageParam = {
+            role: "tool",
+            tool_call_id: toolCall.id,
+            content: commandResult,
           };
           messages.push(result);
         }
