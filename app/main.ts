@@ -47,6 +47,27 @@ async function main() {
           },
         },
       },
+      {
+        type: "function",
+        function: {
+          name: "Write",
+          description: "Write content to a file",
+          parameters: {
+            type: "object",
+            required: ["file_path", "content"],
+            properties: {
+              file_path: {
+                type: "string",
+                description: "The path of the file to write to",
+              },
+              content: {
+                type: "string",
+                description: "The content to write to the file",
+              },
+            },
+          },
+        },
+      },
     ],
   };
 
@@ -87,6 +108,20 @@ async function main() {
             role: "tool",
             tool_call_id: toolCall.id,
             content: fileContent,
+          };
+          messages.push(result);
+        }
+
+        if (functionName === "Write" && functionArgs) {
+          const filePath = JSON.parse(functionArgs).file_path;
+          const fileContent = JSON.parse(functionArgs).content;
+
+          await fs.writeFile(filePath, fileContent, "utf-8");
+
+          const result: OpenAI.ChatCompletionToolMessageParam = {
+            role: "tool",
+            tool_call_id: toolCall.id,
+            content: "file has been created successfully",
           };
           messages.push(result);
         }
