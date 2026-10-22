@@ -2,8 +2,6 @@
 
 [![progress-banner](https://backend.codecrafters.io/progress/claude-code/f8f35ffb-8934-44c3-aa19-4d62a1bf4144)](https://app.codecrafters.io/users/zub-bee?r=2qF)
 
-## For Hiring Managers
-
 This repository documents my implementation work for the [CodeCrafters “Build Your Own Claude Code” challenge](https://codecrafters.io/challenges/claude-code).  
 I built a command-line AI coding assistant in TypeScript that interacts with an OpenAI-compatible API and executes tool calls in an agent loop.
 
