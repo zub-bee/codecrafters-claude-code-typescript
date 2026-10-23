@@ -1,59 +1,42 @@
+# Claude Code (TypeScript) – CodeCrafters Challenge
+
 [![progress-banner](https://backend.codecrafters.io/progress/claude-code/f8f35ffb-8934-44c3-aa19-4d62a1bf4144)](https://app.codecrafters.io/users/zub-bee?r=2qF)
 
-This is a starting point for TypeScript solutions to the
-["Build Your own Claude Code" Challenge](https://codecrafters.io/challenges/claude-code).
+This repository documents my implementation work for the [CodeCrafters “Build Your Own Claude Code” challenge](https://codecrafters.io/challenges/claude-code).  
+I built a command-line AI coding assistant in TypeScript that interacts with an OpenAI-compatible API and executes tool calls in an agent loop.
 
-Claude Code is an AI coding assistant that uses Large Language Models (LLMs) to
-understand code and perform actions through tool calls. In this challenge,
-you'll build your own Claude Code from scratch by implementing an LLM-powered
-coding assistant.
+## What I Built
 
-Along the way you'll learn about HTTP RESTful APIs, OpenAI-compatible tool
-calling, agent loop, and how to integrate multiple tools into an AI assistant.
+- A CLI entrypoint that accepts prompts (`-p`) and validates runtime inputs.
+- Integration with OpenRouter via the OpenAI SDK.
+- A multi-turn agent loop that:
+  - sends conversation state to the model,
+  - handles model tool calls,
+  - executes local tools,
+  - returns tool results back to the model until a final answer is produced.
+- Three implemented tools:
+  - **Read**: reads file contents from disk
+  - **Write**: writes content to files
+  - **Bash**: executes shell commands and returns output
 
-**Note**: If you're viewing this repo on GitHub, head over to
-[codecrafters.io](https://codecrafters.io) to try the challenge.
+## Skills Demonstrated
 
-# Passing the first stage
+- TypeScript application development
+- LLM API integration (OpenAI-compatible interface)
+- JSON-schema-based tool definitions
+- Tool-calling orchestration and agent-loop control flow
+- Async programming and process/file-system integration in Node.js
 
-The entry point for your `claude-code` implementation is in `app/main.ts`. Study
-and uncomment the relevant code, and submit to pass the first stage:
+## Key File
+
+- `/app/main.ts` — core implementation of the assistant loop and tool execution.
+
+## Running Locally
+
+1. Set `OPENROUTER_API_KEY`.
+2. (Optional) Set `OPENROUTER_BASE_URL` (defaults to `https://openrouter.ai/api/v1`).
+3. Run:
 
 ```sh
-codecrafters submit
-```
-
-# Stage 2 & beyond
-
-Note: This section is for stages 2 and beyond.
-
-1. Ensure you have `bun (1.3)` installed locally.
-2. Run `./your_program.sh` to run your program, which is implemented in
-   `app/main.ts`.
-3. Run `codecrafters submit` to submit your solution to CodeCrafters. Test
-   output will be streamed to your terminal.
-
-```typescript
-{
-  "choices": [
-    {
-      "index": 0,
-      "message": {
-        "role": "assistant",
-        "content": null,
-        "tool_calls": [
-          {
-            "id": "call_abc123",
-            "type": "function",
-            "function": {
-              "name": "Read",
-              "arguments": "{\"file_path\": \"/path/to/file.txt\"}"
-            }
-          }
-        ]
-      },
-      "finish_reason": "tool_calls"
-    }
-  ]
-}
+./your_program.sh -p "your prompt here"
 ```
